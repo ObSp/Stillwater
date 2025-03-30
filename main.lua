@@ -2,8 +2,10 @@ local sprite = require "classes.sprite"
 local spriteManager = require "spriteManager"
 local camera = require "classes.camera"
 local generator = require "generator"
+local reader    = require "shaders.reader"
 
 local shader
+local radius = 500
 
 function love.load()
     love.window.setTitle("Stillwater")
@@ -18,13 +20,7 @@ function love.load()
 
     _G.camera = camera
 
-    shader = love.graphics.newShader[[
-    vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ){
-        vec4 pixel = Texel(texture, texture_coords );//This is the current pixel color
-        return pixel * color;
-    }
-
-    ]]
+    shader = love.graphics.newShader(reader.read_file("shaders/main.glsl"))
 end
 
 function love.update()

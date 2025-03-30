@@ -9,14 +9,14 @@ local sandNoiseMap  = require "noisemaps.sandNoiseMap"
 
 local generator = {}
 
-local blockSizeFactor = 2.5
+local blockSizeFactor = 2
 local gridSize = 32 * blockSizeFactor
 
-local mapsizeX = 45
-local mapsizeY = 22
+local mapsizeX = 63
+local mapsizeY = 34
 
 local startX = -1
-local startY = -20
+local startY = -30
 
 
 math.randomseed(os.time())
