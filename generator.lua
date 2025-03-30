@@ -5,6 +5,7 @@ local util          = require "classes.util"
 local noise         = require "lib.noise"
 local waterNoiseMap = require "noisemaps.waterNoiseMap"
 local sandNoiseMap  = require "noisemaps.sandNoiseMap"
+local treeNoiseMap  = require "noisemaps.treeNoiseMap"
 
 
 local generator = {}
@@ -18,6 +19,10 @@ local mapsizeY = 34
 local startX = -1
 local startY = -30
 
+local xIsoSize = 16
+local yIsoSize = 9
+
+local globalShadowRot = math.rad(-95)
 
 math.randomseed(os.time())
 _G.SEED = math.random(0, 10000)
@@ -36,7 +41,18 @@ generator.blockData = {
     grass = {
         name = "grass",
         image = "sprites/grassSprite.png",
-        hasGrid = true
+        hasGrid = true,
+        decorations = {
+            {
+                name = "tree",
+                noiseMap = treeNoiseMap,
+                image = "sprites/treeSprite.png",
+                rawOffset = vector2.new(0, 64),
+                hasShadow = true,
+                shadowImage = "sprites/treeShadowSprite.png"
+
+            }
+        }
     }
 }
 
@@ -58,6 +74,20 @@ function generator.generate()
             block.scale = blockSizeFactor
 
             spriteManager.add(block, "blocks")
+
+            if blockData.decorations then
+                for _, decoration in pairs(blockData.decorations) do
+                    if decoration.noiseMap(x, y) then
+                        local spr = sprite.new(decoration.image)
+                        spr.scale = blockSizeFactor
+                        spr.pos = block.pos - (decoration.rawOffset * blockSizeFactor) + vector2.new(0, yIsoSize * blockSizeFactor)
+
+                        
+    
+                        spriteManager.add(spr, "decorations")
+                    end
+                end
+            end
 
             if (blockData.hasGrid) then
                 local gridItem = sprite.new("sprites/gridSprite.png")

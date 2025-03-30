@@ -5,13 +5,15 @@ local generator = require "generator"
 local reader    = require "shaders.reader"
 
 local shader
-local radius = 500
+local ambiance
 
 function love.load()
     love.window.setTitle("Stillwater")
     love.window.setMode(3,3, {resizable = true})
     love.window.maximize()
 
+    ambiance = love.audio.newSource("sounds/birds.mp3", "stream")
+    ambiance:play()
 
     love.graphics.setBackgroundColor(102/255, 204/255, 255/255)
 
@@ -35,7 +37,13 @@ function love.draw()
     --transparency
     love.graphics.setColor(1, 1, 1, .08)
     spriteManager.drawLayer("grids")
+
+    love.graphics.setColor(1, 1, 1, 1)
+    spriteManager.drawLayer("decorations")
     love.graphics.setShader()
+
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+    love.graphics.print("Seed: "..tostring(SEED), 10, 30)
 end
 
 function love.keypressed(k)
