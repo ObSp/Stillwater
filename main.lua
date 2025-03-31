@@ -6,6 +6,7 @@ local reader    = require "shaders.reader"
 
 local shader
 local ambiance
+local music
 
 function love.load()
     love.window.setTitle("Stillwater")
@@ -14,6 +15,9 @@ function love.load()
 
     ambiance = love.audio.newSource("sounds/birds.mp3", "stream")
     ambiance:play()
+
+    music = love.audio.newSource("sounds/music.mp3", "stream")
+    music:play()
 
     love.graphics.setBackgroundColor(102/255, 204/255, 255/255)
 
@@ -31,6 +35,12 @@ end
 
 function love.draw()
     love.graphics.setShader(shader)
+
+    shader:send("numLights", 0)
+    shader:send("pos", {0,0})
+    --shader:send("color", {{1,1,1,1}})
+    shader:send("power", .1)
+
     love.graphics.setColor(1, 1, 1, 1)
     spriteManager.drawLayer("blocks")
 

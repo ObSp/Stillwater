@@ -10,7 +10,7 @@ local treeNoiseMap  = require "noisemaps.treeNoiseMap"
 
 local generator = {}
 
-local blockSizeFactor = 2
+local blockSizeFactor = 3
 local gridSize = 32 * blockSizeFactor
 
 local mapsizeX = 63
