@@ -40,6 +40,7 @@ function love.draw()
     shader:send("pos", {0,0})
     --shader:send("color", {{1,1,1,1}})
     shader:send("power", .1)
+    shader:send("radius", 50)
 
     love.graphics.setColor(1, 1, 1, 1)
     spriteManager.drawLayer("blocks")
