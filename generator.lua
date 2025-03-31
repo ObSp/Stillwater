@@ -22,7 +22,7 @@ local startY = -30
 local xIsoSize = 16
 local yIsoSize = 9
 
-local globalShadowRot = math.rad(-95)
+local globalShadowRot = math.rad(-115)
 
 math.randomseed(os.time())
 _G.SEED = math.random(0, 10000)
@@ -50,7 +50,6 @@ generator.blockData = {
                 rawOffset = vector2.new(0, 64),
                 hasShadow = true,
                 shadowImage = "sprites/treeShadowSprite.png"
-
             }
         }
     }
@@ -71,7 +70,7 @@ function generator.generate()
 
             local block = sprite.new(blockData.image)
             block.pos = util.getIsoPosFromGridPos(x, y, gridSize) + (blockData == generator.blockData.water and vector2.new(0, 15) or 0)
-            block.scale = blockSizeFactor
+            block:setScale(blockSizeFactor)
 
             spriteManager.add(block, "blocks")
 
@@ -79,11 +78,21 @@ function generator.generate()
                 for _, decoration in pairs(blockData.decorations) do
                     if decoration.noiseMap(x, y) then
                         local spr = sprite.new(decoration.image)
-                        spr.scale = blockSizeFactor
+                        spr:setScale(blockSizeFactor)
                         spr.pos = block.pos - (decoration.rawOffset * blockSizeFactor) + vector2.new(0, yIsoSize * blockSizeFactor)
+  
+                        if decoration.hasShadow then
+                            local shadow = sprite.new(decoration.shadowImage)
+                            shadow.scaleX = spr.scaleX / 1.5
+                            shadow.scaleY = spr.scaleY
+                            shadow.pos = spr.pos + vector2.new(spr.imageSize.x/2 - (10 * (blockSizeFactor - 1)), spr.imageSize.y) + (32 * (blockSizeFactor - 1))
+                            shadow.rot = globalShadowRot
+                            shadow.color = {0,0,0,1}
+                            shadow.origin = vector2.new(shadow.imageSize.x, shadow.imageSize.y)
+                            
+                            spriteManager.add(shadow, "decorations")
+                        end
 
-                        
-    
                         spriteManager.add(spr, "decorations")
                     end
                 end
@@ -92,7 +101,7 @@ function generator.generate()
             if (blockData.hasGrid) then
                 local gridItem = sprite.new("sprites/gridSprite.png")
                 gridItem.pos = block.pos
-                gridItem.scale = blockSizeFactor
+                gridItem:setScale(blockSizeFactor)
     
                 spriteManager.add(gridItem, "grids")
             end
