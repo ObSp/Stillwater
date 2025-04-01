@@ -11,7 +11,7 @@ local bushNoiseMap  = require "noisemaps.bushNoiseMap"
 
 local generator = {}
 
-local blockSizeFactor = 3
+local blockSizeFactor = 2
 local gridSize = 32 * blockSizeFactor
 
 local mapsizeX = 63
@@ -20,8 +20,8 @@ local mapsizeY = 34
 local startX = -1
 local startY = -30
 
-local xIsoSize = 16
-local yIsoSize = 9
+local xIsoSize = 32
+local yIsoSize = 16
 
 local globalShadowRot = math.rad(-115)
 
@@ -48,7 +48,7 @@ generator.blockData = {
                 name = "tree",
                 noiseMap = treeNoiseMap,
                 image = "sprites/treeSprite.png",
-                rawOffset = (vector2.new(0, 64) * blockSizeFactor) - vector2.new(0, yIsoSize * blockSizeFactor),
+                rawOffset = (vector2.new(0, 62) * blockSizeFactor) -vector2.new(0, (yIsoSize * blockSizeFactor)/2),
                 hasShadow = true,
                 shadowImage = "sprites/treeShadowSprite.png"
             },
@@ -56,7 +56,7 @@ generator.blockData = {
                 name = "bush",
                 noiseMap = bushNoiseMap,
                 image = "sprites/bushSprite.png",
-                rawOffset = vector2.new(0, -32 * blockSizeFactor),
+                rawOffset = vector2.new(0, yIsoSize * blockSizeFactor),
                 hasShadow = false,
                 shadowImage = "sprites/treeShadowSprite.png"
             },
