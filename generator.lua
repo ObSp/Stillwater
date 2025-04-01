@@ -6,6 +6,7 @@ local noise         = require "lib.noise"
 local waterNoiseMap = require "noisemaps.waterNoiseMap"
 local sandNoiseMap  = require "noisemaps.sandNoiseMap"
 local treeNoiseMap  = require "noisemaps.treeNoiseMap"
+local bushNoiseMap  = require "noisemaps.bushNoiseMap"
 
 
 local generator = {}
@@ -47,10 +48,18 @@ generator.blockData = {
                 name = "tree",
                 noiseMap = treeNoiseMap,
                 image = "sprites/treeSprite.png",
-                rawOffset = vector2.new(0, 64),
+                rawOffset = (vector2.new(0, 64) * blockSizeFactor) - vector2.new(0, yIsoSize * blockSizeFactor),
                 hasShadow = true,
                 shadowImage = "sprites/treeShadowSprite.png"
-            }
+            },
+            {
+                name = "bush",
+                noiseMap = bushNoiseMap,
+                image = "sprites/bushSprite.png",
+                rawOffset = vector2.new(0, -32 * blockSizeFactor),
+                hasShadow = false,
+                shadowImage = "sprites/treeShadowSprite.png"
+            },
         }
     }
 }
@@ -75,11 +84,12 @@ function generator.generate()
             spriteManager.add(block, "blocks")
 
             if blockData.decorations then
+                local decorated = false
                 for _, decoration in pairs(blockData.decorations) do
-                    if decoration.noiseMap(x, y) then
+                    if decoration.noiseMap(x, y) and not decorated then
                         local spr = sprite.new(decoration.image)
                         spr:setScale(blockSizeFactor)
-                        spr.pos = block.pos - (decoration.rawOffset * blockSizeFactor) + vector2.new(0, yIsoSize * blockSizeFactor)
+                        spr.pos = block.pos - decoration.rawOffset
   
                         if decoration.hasShadow then
                             local shadow = sprite.new(decoration.shadowImage)
@@ -94,6 +104,7 @@ function generator.generate()
                         end
 
                         spriteManager.add(spr, "decorations")
+                        decorated = true
                     end
                 end
             end
