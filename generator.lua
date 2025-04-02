@@ -48,7 +48,7 @@ generator.blockData = {
     },
     grass = {
         name = "grass",
-        image = "sprites/grassSprite.png",
+        image = "sprites/normalBlockSprite.png",
         hasGrid = true,
         decorations = {
             { 
