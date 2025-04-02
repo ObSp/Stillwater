@@ -34,6 +34,10 @@ vec2.__unm = function (self)
     return vec2.new(-self.x, -self.y)
 end
 
+vec2.__tostring = function (self)
+    return tostring(self.x)..", "..tostring(self.y)
+end
+
 
 function vec2.new(x, y)
     local self = {}

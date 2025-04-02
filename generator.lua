@@ -11,8 +11,7 @@ local bushNoiseMap  = require "noisemaps.bushNoiseMap"
 
 local generator = {}
 
-local blockSizeFactor = 2
-local gridSize = 32 * blockSizeFactor
+local blockSizeFactor = 3
 
 local mapsizeX = 63
 local mapsizeY = 34
@@ -23,10 +22,18 @@ local startY = -30
 local xIsoSize = 32
 local yIsoSize = 16
 
+local gridSize = xIsoSize * blockSizeFactor
+
 local globalShadowRot = math.rad(-115)
 
 math.randomseed(os.time())
 _G.SEED = math.random(0, 10000)
+
+generator.blockGrid = {}
+
+generator.isoSize = vector2.new(xIsoSize, yIsoSize)
+generator.blockSizeFactor = blockSizeFactor
+generator.gridSize = gridSize
 
 generator.blockData = {
     water = {
@@ -44,7 +51,7 @@ generator.blockData = {
         image = "sprites/grassSprite.png",
         hasGrid = true,
         decorations = {
-            {
+            { 
                 name = "tree",
                 noiseMap = treeNoiseMap,
                 image = "sprites/treeSprite.png",
@@ -63,6 +70,22 @@ generator.blockData = {
         }
     }
 }
+
+function generator.putSpotInfo(x, y, block)
+    if not generator.blockGrid[x] then
+        generator.blockGrid[x] = {}
+    end
+
+    generator.blockGrid[x][y] = block
+end
+
+function generator.getSpotInfo(x, y)
+    if not generator.blockGrid[x] then
+        return nil
+    end
+
+    return generator.blockGrid[x][y]
+end
 
 function generator.blockDataFromPos(x, y)
     if waterNoiseMap(x,y) then return generator.blockData.water end
@@ -83,16 +106,18 @@ function generator.generate()
 
             spriteManager.add(block, "blocks")
 
+            local finalDecorationData = {}
+
             if blockData.decorations then
-                local decorated = false
                 for _, decoration in pairs(blockData.decorations) do
-                    if decoration.noiseMap(x, y) and not decorated then
+                    if decoration.noiseMap(x, y) then
                         local spr = sprite.new(decoration.image)
                         spr:setScale(blockSizeFactor)
                         spr.pos = block.pos - decoration.rawOffset
   
+                        local shadow
                         if decoration.hasShadow then
-                            local shadow = sprite.new(decoration.shadowImage)
+                            shadow = sprite.new(decoration.shadowImage)
                             shadow.scaleX = spr.scaleX / 1.5
                             shadow.scaleY = spr.scaleY
                             shadow.pos = spr.pos + vector2.new(spr.imageSize.x/2 - (10 * (blockSizeFactor - 1)), spr.imageSize.y) + (32 * (blockSizeFactor - 1))
@@ -104,18 +129,31 @@ function generator.generate()
                         end
 
                         spriteManager.add(spr, "decorations")
-                        decorated = true
+                        finalDecorationData = {
+                            dec = spr,
+                            shadow = shadow
+                        }
+                        goto continue
                     end
                 end
+                ::continue::
             end
 
+            local gridItem
             if (blockData.hasGrid) then
-                local gridItem = sprite.new("sprites/gridSprite.png")
+                gridItem = sprite.new("sprites/gridSprite.png")
                 gridItem.pos = block.pos
                 gridItem:setScale(blockSizeFactor)
     
                 spriteManager.add(gridItem, "grids")
             end
+
+            generator.putSpotInfo(x, y, {
+                block = block,
+                decoration = finalDecorationData.dec,
+                decorationShadow = finalDecorationData.shadow,
+                gridItem = gridItem
+            })
         end
     end
 end

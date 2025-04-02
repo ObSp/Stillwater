@@ -3,6 +3,8 @@ local spriteManager = require "spriteManager"
 local camera = require "classes.camera"
 local generator = require "generator"
 local reader    = require "shaders.reader"
+local util      = require "classes.util"
+local vector2   = require "classes.vector2"
 
 local shader
 local ambiance
@@ -17,7 +19,7 @@ function love.load()
     ambiance:play()
 
     music = love.audio.newSource("sounds/music.mp3", "stream")
-    music:play()
+    --music:play()
 
     love.graphics.setBackgroundColor(102/255, 204/255, 255/255)
 
@@ -29,18 +31,32 @@ function love.load()
     shader = love.graphics.newShader(reader.read_file("shaders/main.glsl"))
 end
 
+local selectedBlock
 function love.update()
-    
+    local x, y = love.mouse.getPosition()
+    local isoMousePos = util.getGridPosFromWorldPos(x, y + 20 * (generator.blockSizeFactor - 1), generator.gridSize)
+
+    local block = generator.getSpotInfo(isoMousePos.x, isoMousePos.y)
+    if selectedBlock then
+        selectedBlock = nil
+    end
+    if not block then return end
+    selectedBlock = block
 end
 
-function love.draw()
-    love.graphics.setShader(shader)
 
+local function sendLightingData()
     shader:send("numLights", 0)
     shader:send("pos", {0,0})
     --shader:send("color", {{1,1,1,1}})
     shader:send("power", .1)
     shader:send("radius", 50)
+end
+
+function love.draw()
+    love.graphics.setShader(shader)
+
+    sendLightingData()
 
     love.graphics.setColor(1, 1, 1, 1)
     spriteManager.drawLayer("blocks")
@@ -53,7 +69,7 @@ function love.draw()
     spriteManager.drawLayer("decorations")
     love.graphics.setShader()
 
-    love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 10, 10)
+    love.graphics.print("FPS: "..tostring(love.timer.getFPS()), 10, 10)
     love.graphics.print("Seed: "..tostring(SEED), 10, 30)
 end
 
