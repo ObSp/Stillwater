@@ -19,7 +19,7 @@ function love.load()
     ambiance:play()
 
     music = love.audio.newSource("sounds/music.mp3", "stream")
-    --music:play()
+    music:play()
 
     love.graphics.setBackgroundColor(102/255, 204/255, 255/255)
 
