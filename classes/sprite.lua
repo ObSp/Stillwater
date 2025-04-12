@@ -7,7 +7,7 @@ function sprite:draw()
 
     local r,g,b,a
     if self.color then
-        r,g,b,a= love.graphics.getColor()
+        r,g,b,a = love.graphics.getColor()
         love.graphics.setColor(self.color[1], self.color[2], self.color[3], self.color[4])
     end
 
