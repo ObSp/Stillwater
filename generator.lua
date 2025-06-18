@@ -11,7 +11,7 @@ local bushNoiseMap  = require "noisemaps.bushNoiseMap"
 
 local generator = {}
 
-local blockSizeFactor = 2
+local blockSizeFactor = 3
 
 local mapsizeX = 63
 local mapsizeY = 34
